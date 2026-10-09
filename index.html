@@ -90,7 +90,9 @@ section { display: flex; flex-direction: column; gap: 14px; }
   background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
   padding: 16px; display: flex; flex-direction: column; gap: 14px;
 }
-.panel.done { border-color: var(--free); }
+.panel.done { border-color: var(--free); padding: 28px 20px; align-items: center; text-align: center; gap: 16px; margin-block: 8vh; }
+.panel.done h2 { font-size: 1.4rem; }
+.panel.done p { max-width: 46ch; }
 .row { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; }
 .label { font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
 .flabel { font-weight: 600; }
@@ -370,7 +372,8 @@ table.grid tfoot td.has { color: var(--ink); font-weight: 600; }
     root.setAttribute('dir', lang === 'ku' ? 'rtl' : 'ltr');
     refs = {};
     root.appendChild(buildHeader());
-    if (justSent) root.appendChild(buildDone());
+    // After sending, the thank-you message stands alone; the form comes back only if they ask for it.
+    if (justSent) { root.appendChild(buildDone()); return; }
     if (fromFile) root.appendChild(h('p', { class: 'panel small en', dir: 'ltr', lang: 'en',
       text: 'You opened this page from a file. Submit sends by itself only after the page is uploaded to a website.' }));
     if (editOpen) root.appendChild(buildEditor());
@@ -405,13 +408,12 @@ table.grid tfoot td.has { color: var(--ink); font-weight: 600; }
   }
 
   function buildDone() {
-    var box = h('section', { class: 'panel done', role: 'status' },
+    return h('section', { class: 'panel done', role: 'status' },
       h('h2', { text: t('Your form was sent. Thank you!', 'فۆرمەکەت نێردرا. سوپاس!') }),
       h('p', { text: t('We received your name and your free hours. If something changes, you can fill in the form again and send it once more.',
         'ناو و کاتە بەتاڵەکانت گەیشتن. ئەگەر شتێک گۆڕا، دەتوانیت فۆرمەکە دووبارە پڕ بکەیتەوە و جارێکی تر بینێریت.') }),
-      h('div', { class: 'row' }, h('button', { class: 'btn', type: 'button', id: 'done-close', text: t('Close', 'داخستن'),
-        onclick: function () { justSent = false; box.remove(); } })));
-    return box;
+      h('div', { class: 'row' }, h('button', { class: 'btn', type: 'button', id: 'done-again', text: t('Fill in the form again', 'دووبارە پڕکردنەوەی فۆرمەکە'),
+        onclick: function () { justSent = false; render(); } })));
   }
 
   function buildHow() {
